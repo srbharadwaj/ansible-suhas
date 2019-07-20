@@ -49,7 +49,6 @@ options:
     description:
     - A reference to the zone where the disk resides.
     required: true
-    type: str
 extends_documentation_fragment: gcp
 '''
 

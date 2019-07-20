@@ -49,7 +49,6 @@ options:
       to a gcp_dns_managed_zone task and then set this managed_zone field to "{{ name-of-resource
       }}"'
     required: true
-    type: dict
 extends_documentation_fragment: gcp
 '''
 

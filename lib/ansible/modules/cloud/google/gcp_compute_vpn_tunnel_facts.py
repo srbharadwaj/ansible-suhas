@@ -49,7 +49,6 @@ options:
     description:
     - The region where the tunnel is located.
     required: true
-    type: str
 extends_documentation_fragment: gcp
 '''
 

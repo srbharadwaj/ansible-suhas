@@ -130,7 +130,7 @@ options:
         default: present
   virtual_drive:
     description:
-    - Configuration of virtual drive options.
+    - Configuraiton of virtual drive options.
     suboptions:
       access_policy:
         description:

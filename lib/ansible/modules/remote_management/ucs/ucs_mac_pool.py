@@ -32,13 +32,13 @@ options:
     - "You cannot use spaces or any special characters other than - (hyphen), \"_\" (underscore), : (colon), and . (period)."
     - You cannot change this name after the MAC pool is created.
     required: yes
-  description:
+  descrption:
     description:
     - A description of the MAC pool.
     - Enter up to 256 characters.
     - "You can use any characters or spaces except the following:"
     - "` (accent mark), \ (backslash), ^ (carat), \" (double quote), = (equal sign), > (greater than), < (less than), or ' (single quote)."
-    aliases: [ descr, descrption ]
+    aliases: [ descr ]
   order:
     description:
     - The Assignment Order field.
@@ -100,7 +100,7 @@ def main():
     argument_spec.update(
         org_dn=dict(type='str', default='org-root'),
         name=dict(type='str', required=True),
-        descr=dict(type='str', default='', aliases=['description', 'descrption']),
+        descr=dict(type='str', default=''),
         order=dict(type='str', default='default', choices=['default', 'sequential']),
         first_addr=dict(type='str'),
         last_addr=dict(type='str'),

@@ -33,7 +33,7 @@ options:
 
     org_name:
         description:
-        - The name of the organization.
+        - The name of the orgranization.
         - Enter up to 16 characters.
         - "You can use any characters or spaces except the following:"
         - "` (accent mark), \ (backslash), ^ (carat), \" (double quote), = (equal sign), > (greater than), < (less than), or ' (single quote)."

@@ -49,7 +49,6 @@ options:
       to a gcp_spanner_instance task and then set this instance field to "{{ name-of-resource
       }}"'
     required: true
-    type: dict
 extends_documentation_fragment: gcp
 '''
 

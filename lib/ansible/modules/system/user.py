@@ -60,14 +60,14 @@ options:
               C(null), or C(~), the user is removed from all groups except the
               primary group. (C(~) means C(null) in YAML)
             - Before Ansible 2.3, the only input format allowed was a comma separated string.
-            - Mutually exclusive with C(local)
+            - Has no effect when C(local) is C(True)
         type: list
     append:
         description:
             - If C(yes), add the user to the groups specified in C(groups).
             - If C(no), user will only be added to the groups specified in C(groups),
               removing them from all other groups.
-            - Mutually exclusive with C(local)
+            - Has no effect when C(local) is C(True)
         type: bool
         default: no
     shell:
@@ -211,7 +211,6 @@ options:
             - This will check C(/etc/passwd) for an existing account before invoking commands. If the local account database
               exists somewhere other than C(/etc/passwd), this setting will not work properly.
             - This requires that the above commands as well as C(/etc/passwd) must exist on the target host, otherwise it will be a fatal error.
-            - Mutually exclusive with C(groups) and C(append)
         type: bool
         default: no
         version_added: "2.4"
@@ -2861,11 +2860,7 @@ def main():
             authorization=dict(type='str'),
             role=dict(type='str'),
         ),
-        supports_check_mode=True,
-        mutually_exclusive=[
-            ('local', 'groups'),
-            ('local', 'append')
-        ]
+        supports_check_mode=True
     )
 
     user = User(module)

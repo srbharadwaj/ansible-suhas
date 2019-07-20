@@ -51,12 +51,10 @@ options:
     description:
     - The name of the service account.
     required: false
-    type: str
   display_name:
     description:
     - User specified description of service account.
     required: false
-    type: str
 extends_documentation_fragment: gcp
 '''
 

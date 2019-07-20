@@ -62,7 +62,6 @@ options:
       An address may only be specified for INTERNAL address types. The IP address
       must be inside the specified subnetwork, if any.
     required: false
-    type: str
   address_type:
     description:
     - The type of address to reserve, either INTERNAL or EXTERNAL.
@@ -70,13 +69,11 @@ options:
     - 'Some valid choices include: "INTERNAL", "EXTERNAL"'
     required: false
     default: EXTERNAL
-    type: str
     version_added: 2.7
   description:
     description:
     - An optional description of this resource.
     required: false
-    type: str
   name:
     description:
     - Name of the resource. The name must be 1-63 characters long, and comply with
@@ -85,7 +82,6 @@ options:
       be a lowercase letter, and all following characters must be a dash, lowercase
       letter, or digit, except the last character, which cannot be a dash.
     required: true
-    type: str
   network_tier:
     description:
     - 'The networking tier used for configuring this address. This field can take
@@ -93,7 +89,6 @@ options:
       is assumed to be PREMIUM.'
     - 'Some valid choices include: "PREMIUM", "STANDARD"'
     required: false
-    type: str
     version_added: 2.8
   subnetwork:
     description:
@@ -107,14 +102,12 @@ options:
       to a gcp_compute_subnetwork task and then set this subnetwork field to "{{ name-of-resource
       }}"'
     required: false
-    type: dict
     version_added: 2.7
   region:
     description:
     - URL of the region where the regional address resides.
     - This field is not applicable to global addresses.
     required: true
-    type: str
 extends_documentation_fragment: gcp
 notes:
 - 'API Reference: U(https://cloud.google.com/compute/docs/reference/beta/addresses)'

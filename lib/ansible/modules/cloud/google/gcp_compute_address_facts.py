@@ -50,7 +50,6 @@ options:
     - URL of the region where the regional address resides.
     - This field is not applicable to global addresses.
     required: true
-    type: str
 extends_documentation_fragment: gcp
 '''
 

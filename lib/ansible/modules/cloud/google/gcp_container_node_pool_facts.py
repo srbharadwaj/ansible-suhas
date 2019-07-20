@@ -44,7 +44,6 @@ options:
     description:
     - The location where the node pool is deployed.
     required: true
-    type: str
     aliases:
     - region
     - zone
@@ -58,7 +57,6 @@ options:
       to a gcp_container_cluster task and then set this cluster field to "{{ name-of-resource
       }}"'
     required: true
-    type: dict
 extends_documentation_fragment: gcp
 '''
 
