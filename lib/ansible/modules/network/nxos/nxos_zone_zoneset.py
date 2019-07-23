@@ -187,7 +187,7 @@ class ShowZonesetActive(object):
         return output
 
     def parseCmdOutput(self):
-        patZoneset = "zoneset name (\S+) vsan " + str(self.vsan)
+        patZoneset = r"zoneset name (\S+) vsan " + str(self.vsan)
         output = self.execute_show_zoneset_active_cmd().split("\n")
         if len(output) == 0:
             return
@@ -222,8 +222,8 @@ class ShowZoneset(object):
         return output
 
     def parseCmdOutput(self):
-        patZoneset = "zoneset name (\S+) vsan " + str(self.vsan)
-        patZone = "zone name (\S+) vsan " + str(self.vsan)
+        patZoneset = r"zoneset name (\S+) vsan " + str(self.vsan)
+        patZone = r"zone name (\S+) vsan " + str(self.vsan)
         output = self.execute_show_zoneset_cmd().split("\n")
         for line in output:
             line = line.strip()
@@ -263,7 +263,7 @@ class ShowZone(object):
         return output
 
     def parseCmdOutput(self):
-        patZone = "zone name (\S+) vsan " + str(self.vsan)
+        patZone = r"zone name (\S+) vsan " + str(self.vsan)
         output = self.execute_show_zone_vsan_cmd().split("\n")
         for line in output:
             line = ' '.join(line.strip().split())
@@ -311,10 +311,10 @@ class ShowZoneStatus(object):
 
         output = self.execute_show_zone_status_cmd().split("\n")
 
-        patfordefzone = "VSAN: " + str(self.vsan) + " default-zone:\s+(\S+).*"
-        patformode = ".*mode:\s+(\S+).*"
-        patforsession = ".*session:\s+(\S+).*"
-        patforsz = ".*smart-zoning:\s+(\S+).*"
+        patfordefzone = "VSAN: " + str(self.vsan) + r" default-zone:\s+(\S+).*"
+        patformode = r".*mode:\s+(\S+).*"
+        patforsession = r".*session:\s+(\S+).*"
+        patforsz = r".*smart-zoning:\s+(\S+).*"
         for line in output:
             if "is not configured" in line:
                 self.vsanAbsent = True
@@ -370,9 +370,16 @@ def flatten_list(command_lists):
     return flat_command_list
 
 
+def getMemType(supported_choices, allmemkeys, default='pwwn'):
+    for eachchoice in supported_choices:
+        if eachchoice in allmemkeys:
+            return eachchoice
+    return default
+
+
 def main():
 
-    supported_choices = ['pwwn', 'device-alias']
+    supported_choices = ['device-alias']
     zone_member_spec = dict(
         pwwn=dict(required=True, type='str', aliases=['device-alias']),
         devtype=dict(type='str', choices=['initiator', 'target', 'both']),
@@ -525,8 +532,11 @@ def main():
                     else:
                         cmdmemlist = []
                         for eachmem in zmembers:
-                            memtype = list(set(supported_choices).intersection(eachmem.keys()))
-                            cmd = memtype[0] + " " + eachmem[memtype[0]]
+                            # memtype = list(set(supported_choices).intersection(eachmem.keys()))
+                            # cmd = memtype[0] + " " + eachmem[memtype[0]]
+                            # module.fail_json(msg=memtype)
+                            memtype = getMemType(supported_choices, eachmem.keys())
+                            cmd = memtype + " " + eachmem[memtype]
                             if op_smart_zoning or sw_smart_zoning_bool:
                                 if eachmem['devtype'] is not None:
                                     cmd = cmd + " " + eachmem['devtype']
@@ -537,30 +547,30 @@ def main():
                                         cmd = "no member " + cmd
                                         cmdmemlist.append(cmd)
                                         if op_smart_zoning and eachmem['devtype'] is not None:
-                                            messages.append("removing zone member '" + eachmem[memtype[0]] + " of device type '" + eachmem['devtype'] + "' from zone '" + zname + "' in vsan " + str(vsan))
+                                            messages.append("removing zone member '" + eachmem[memtype] + " of device type '" + eachmem['devtype'] + "' from zone '" + zname + "' in vsan " + str(vsan))
                                         else:
-                                            messages.append("removing zone member '" + eachmem[memtype[0]] + "' from zone '" + zname + "' in vsan " + str(vsan))
+                                            messages.append("removing zone member '" + eachmem[memtype] + "' from zone '" + zname + "' in vsan " + str(vsan))
                                     else:
                                         if op_smart_zoning and eachmem['devtype'] is not None:
-                                            messages.append("zone member '" + eachmem[memtype[0]] + "' of device type '" + eachmem['devtype'] + "' is not present in zone '" + zname + "' in vsan " + str(vsan) + " hence nothing to remove")
+                                            messages.append("zone member '" + eachmem[memtype] + "' of device type '" + eachmem['devtype'] + "' is not present in zone '" + zname + "' in vsan " + str(vsan) + " hence nothing to remove")
                                         else:
-                                            messages.append("zone member '" + eachmem[memtype[0]] + "' is not present in zone '" + zname + "' in vsan " + str(vsan) + " hence nothing to remove")
+                                            messages.append("zone member '" + eachmem[memtype] + "' is not present in zone '" + zname + "' in vsan " + str(vsan) + " hence nothing to remove")
                                 else:
                                     messages.append("zone '" + zname + "' is not present in vsan " + str(vsan) + " , hence cannot remove the members")
 
                             else:
                                 if shZoneObj.isZoneMemberPresent(zname, cmd):
                                     if op_smart_zoning and eachmem['devtype'] is not None:
-                                        messages.append("zone member '" + eachmem[memtype[0]] + "' of device type '" + eachmem['devtype'] + "' is already present in zone '" + zname + "' in vsan " + str(vsan) + " hence nothing to add")
+                                        messages.append("zone member '" + eachmem[memtype] + "' of device type '" + eachmem['devtype'] + "' is already present in zone '" + zname + "' in vsan " + str(vsan) + " hence nothing to add")
                                     else:
-                                        messages.append("zone member '" + eachmem[memtype[0]] + "' is already present in zone '" + zname + "' in vsan " + str(vsan) + " hence nothing to add")
+                                        messages.append("zone member '" + eachmem[memtype] + "' is already present in zone '" + zname + "' in vsan " + str(vsan) + " hence nothing to add")
                                 else:
                                     cmd = "member " + cmd
                                     cmdmemlist.append(cmd)
                                     if op_smart_zoning and eachmem['devtype'] is not None:
-                                        messages.append("adding zone member '" + eachmem[memtype[0]] + "' of device type '" + eachmem['devtype'] + "' to zone '" + zname + "' in vsan " + str(vsan))
+                                        messages.append("adding zone member '" + eachmem[memtype] + "' of device type '" + eachmem['devtype'] + "' to zone '" + zname + "' in vsan " + str(vsan))
                                     else:
-                                        messages.append("adding zone member '" + eachmem[memtype[0]] + "' to zone '" + zname + "' in vsan " + str(vsan))
+                                        messages.append("adding zone member '" + eachmem[memtype] + "' to zone '" + zname + "' in vsan " + str(vsan))
                         if len(cmdmemlist) != 0:
                             commands_executed.append("zone name " + zname + " vsan " + str(vsan))
                             commands_executed = commands_executed + cmdmemlist
