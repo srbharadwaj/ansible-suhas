@@ -100,7 +100,7 @@ class GetVsanInfoFromSwitch(object):
         self.vsaninfo = {}
         self.processShowVsan()
         self.processShowVsanMembership()
-        #self.module.fail_json(msg=[[k, self.vsaninfo[k].vsanname] for k in self.vsaninfo.keys()])
+        # self.module.fail_json(msg=[[k, self.vsaninfo[k].vsanname] for k in self.vsaninfo.keys()])
 
     def execute_show_vsan_cmd(self):
         output = execute_show_command('show vsan', self.module)[0]

@@ -196,12 +196,12 @@ class ShowZonesetActive(object):
                 line = line.strip()
                 mzs = re.match(patZoneset, line.strip())
                 if mzs:
-                    #self.module.fail_json(msg=line + "$---$" + patZoneset)
+                    # self.module.fail_json(msg=line + "$---$" + patZoneset)
                     self.activeZSName = mzs.group(1).strip()
                     return
 
     def isZonesetActive(self, zsname):
-        #self.module.fail_json(msg=str(zsname) + "--" + str(self.activeZSName))
+        # self.module.fail_json(msg=str(zsname) + "--" + str(self.activeZSName))
         if zsname == self.activeZSName:
             return True
         return False
@@ -274,6 +274,7 @@ class ShowZone(object):
                 continue
             else:
                 # For now we support only pwwn and device-alias under zone
+                # Ideally should use 'supported_choices'..maybe next time.
                 if "pwwn" in line or "device-alias" in line:
                     v = self.zDetails[zonename]
                     v.append(line)
@@ -450,16 +451,6 @@ def main():
         sw_mode = shZoneStatusObj.getMode()
         sw_smart_zoning = shZoneStatusObj.getSmartZoningStatus()
 
-        # messages.append(vsan)
-        # messages.append(op_mode)
-        # messages.append(op_default_zone)
-        # messages.append(op_smart_zoning)
-        # messages.append(op_zone)
-        # messages.append(op_zoneset)
-        # messages.append(sw_default_zone)
-        # messages.append(sw_mode)
-        # messages.append(sw_smart_zoning)
-        # module.exit_json(changed=False, msg=messages)
         if sw_smart_zoning.lower() == "Enabled".lower():
             sw_smart_zoning_bool = True
         else:

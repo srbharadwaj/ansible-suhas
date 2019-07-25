@@ -81,7 +81,7 @@ EXAMPLES = '''
               - { name: 'dev2', remove: True}
           rename:
               - { old_name: 'abc', new_name: 'bcd'}
-              - { old_name: 'abc1', new_name: 'bcd1'} 
+              - { old_name: 'abc1', new_name: 'bcd1'}
           provider: "{{ creds }}"
       register: result
     - debug: var=result
@@ -105,7 +105,7 @@ class showDeviceAliasStatus(object):
 
     def update(self):
         command = 'show device-alias status'
-        #output = execute_show_command(command, self.module)[0].split("\n")
+        # output = execute_show_command(command, self.module)[0].split("\n")
         output = self.execute_show_cmd(command).split("\n")
         for o in output:
             if "Fabric Distribution" in o:
@@ -139,7 +139,7 @@ class showDeviceAliasDatabase(object):
 
     def update(self):
         command = 'show device-alias database'
-        #output = execute_show_command(command, self.module)[0].split("\n")
+        # output = execute_show_command(command, self.module)[0].split("\n")
         output = self.execute_show_cmd(command)
         self.da_list = output.split("\n")
         for eachline in self.da_list:
@@ -250,7 +250,7 @@ def main():
     mode = module.params['mode']
     da = module.params['da']
     rename = module.params['rename']
-    #module.fail_json(msg='Dis ' + str(distribute) + ' Mode ' + str(mode))
+    # module.fail_json(msg='Dis ' + str(distribute) + ' Mode ' + str(mode))
 
     ##################################################
     # Step 0.0: Validate syntax of name and pwwn
@@ -307,9 +307,6 @@ def main():
                 messages.append('device-alias distribute changed from enabled to disabled')
             else:
                 messages.append('device-alias distribute remains unchanged. current distribution mode is disabled')
-
-    # if len(commands) != 0:
-    #    commands = ["terminal dont-ask"] + commands + ["no terminal dont-ask"]
 
     cmds = flatten_list(commands)
     if cmds:
@@ -382,7 +379,7 @@ def main():
                     commands.append("no device-alias name " + name)
                     da_remove_list.append(name)
                 else:
-                    #module.fail_json(msg='This device alias name is not in switch device-alias database. hence cant be removed : ' + name)
+                    # module.fail_json(msg='This device alias name is not in switch device-alias database. hence cant be removed : ' + name)
                     messages.append(name + ' - This device alias name is not in switch device-alias database, hence cannot be removed.')
             else:
                 if shDADatabaseObj.isNamePwwnPresentInDatabase(name, pwwn):
@@ -390,10 +387,10 @@ def main():
                 else:
                     if shDADatabaseObj.isNameInDaDatabase(name):
                         module.fail_json(msg=name + ' - This device alias name is already present in switch device-alias database but assigned to another pwwn (' + shDADatabaseObj.getPwwnByName(name) + ') hence cannot be added')
-                        #messages.append(name + ' - This device alias name is present in switch device-alias database, hence cannot be added.')
+                        # messages.append(name + ' - This device alias name is present in switch device-alias database, hence cannot be added.')
                     elif shDADatabaseObj.isPwwnInDaDatabase(pwwn):
                         module.fail_json(msg=pwwn + ' - This device alias pwwn is already present in switch device-alias database but assigned to another name (' + shDADatabaseObj.getNameByPwwn(pwwn) + ') hence cannot be added')
-                        #messages.append(pwwn + ' - This device alias pwwn is present in switch device-alias database, hence cannot be added.')
+                        # messages.append(pwwn + ' - This device alias pwwn is present in switch device-alias database, hence cannot be added.')
                     else:
                         commands.append("device-alias name " + name + " pwwn " + pwwn)
                         da_add_list.append(name)
@@ -409,15 +406,12 @@ def main():
                     commands.append("device-alias commit")
                     commands = ["terminal dont-ask"] + commands + ["no terminal dont-ask"]
 
-        # if len(commands) != 0:
-        #    commands = ["terminal dont-ask"] + commands + ["no terminal dont-ask"]
         cmds = flatten_list(commands)
         if cmds:
             commands_to_execute = commands_to_execute + cmds
             if module.check_mode:
                 # Check mode implemented at the end
                 pass
-                #module.exit_json(changed=False, commands=cmds, msg="Check Mode: No cmds issued to the hosts")
             else:
                 result['changed'] = True
                 load_config(module, cmds)
@@ -451,7 +445,7 @@ def main():
                     commands.append("device-alias commit")
                     commands = ["terminal dont-ask"] + commands + ["no terminal dont-ask"]
         # module.exit_json(msg=commands)
-        #if len(commands) != 0:
+        # if len(commands) != 0:
         #    commands = ["terminal dont-ask"] + commands + ["no terminal dont-ask"]
         cmds = flatten_list(commands)
         if cmds:
