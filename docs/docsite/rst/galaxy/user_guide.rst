@@ -7,7 +7,7 @@ Galaxy User Guide
 
 :dfn:`Ansible Galaxy` refers to the `Galaxy <https://galaxy.ansible.com>`_  website, a free site for finding, downloading, and sharing community developed roles.
 
-Use Galaxy to jump-start your automation project with great content from the Ansible community. Galaxy provides pre-packaged units of work such as `roles <playbooks_reuse_roles>`_, and new in Galaxy 3.2, `collections <collections>`_.
+Use Galaxy to jump-start your automation project with great content from the Ansible community. Galaxy provides pre-packaged units of work such as :ref:`roles <playbooks_reuse_roles>`, and new in Galaxy 3.2, :ref:`collections <collections>`
 You can find roles for provisioning infrastructure, deploying applications, and all of the tasks you do everyday. The collection format provides a comprehensive package of automation that may include multiple playbooks, roles, modules, and plugins.
 
 .. contents::
@@ -28,11 +28,45 @@ Galaxy presents a list of collections that match your search criteria.
 
 .. _installing_galaxy_collections:
 
-Installing collections from Galaxy
-==================================
+
+Installing collections
+======================
+
+
+Installing a collection from Galaxy
+-----------------------------------
 
 .. include:: ../shared_snippets/installing_collections.txt
 
+.. _installing_ah_collection:
+
+Downloading a collection from Automation Hub
+----------------------------------------------------
+
+You can download collections from Automation Hub at the command line. Automation Hub content is available to subscribers only, so you must download an API token and configure your local environment to provide it before you can you download collections. To download a collection from Automation Hub with the ``ansible-galaxy`` command:
+
+1. Get your Automation Hub API token. Go to https://cloud.redhat.com/ansible/automation-hub/token/ and click :guilabel:`Get API token` from the version dropdown to copy your API token.
+2. Configure Red Hat Automation Hub server in the ``server_list``  option under the ``[galaxy]`` section in your :file:`ansible.cfg` file.
+
+  .. code-block:: ini
+
+      [galaxy]
+      server_list = automation_hub
+
+      [galaxy_server.automation_hub]
+      url=https://cloud.redhat.com/api/automation-hub/
+      auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+      token=my_ah_token
+
+3. Download the collection hosted in Automation Hub.
+
+  .. code-block:: bash
+
+     ansible-galaxy collection install my_namespace.my_collection
+
+.. seealso::
+  `Getting started with Automation Hub <https://www.ansible.com/blog/getting-started-with-ansible-hub>`_
+    An introduction to Automation Hub
 
 Installing an older version of a collection
 -------------------------------------------
@@ -44,11 +78,22 @@ Install multiple collections with a requirements file
 
 .. include:: ../shared_snippets/installing_multiple_collections.txt
 
-Galaxy server configuration list
---------------------------------
+Downloading a collection for offline use
+-----------------------------------------
+
+.. include:: ../shared_snippets/download_tarball_collections.txt
+
+
+Listing installed collections
+-----------------------------
+
+To list installed collections, run ``ansible-galaxy collection list``. See :ref:`collections_listing` for more details.
+
+
+Configuring the ``ansible-galaxy`` client
+------------------------------------------
 
 .. include:: ../shared_snippets/galaxy_server_list.txt
-
 
 .. _finding_galaxy_roles:
 
@@ -218,27 +263,31 @@ Use the following example as a guide for specifying roles in *requirements.yml*:
 .. code-block:: yaml
 
     # from galaxy
-    - src: yatesr.timezone
+    - name: yatesr.timezone
 
     # from GitHub
     - src: https://github.com/bennojoy/nginx
 
     # from GitHub, overriding the name and specifying a specific tag
-    - src: https://github.com/bennojoy/nginx
+    - name: nginx_role
+      src: https://github.com/bennojoy/nginx
       version: master
-      name: nginx_role
+
+    # from GitHub, specifying a specific commit hash
+    - src: https://github.com/bennojoy/nginx
+      version: "ee8aa41"
 
     # from a webserver, where the role is packaged in a tar.gz
-    - src: https://some.webserver.example.com/files/master.tar.gz
-      name: http-role-gz
+    - name: http-role-gz
+      src: https://some.webserver.example.com/files/master.tar.gz
 
     # from a webserver, where the role is packaged in a tar.bz2
-    - src: https://some.webserver.example.com/files/master.tar.bz2
-      name: http-role-bz2
+    - name: http-role-bz2
+      src: https://some.webserver.example.com/files/master.tar.bz2
 
     # from a webserver, where the role is packaged in a tar.xz (Python 3.x only)
-    - src: https://some.webserver.example.com/files/master.tar.xz
-      name: http-role-xz
+    - name: http-role-xz
+      src: https://some.webserver.example.com/files/master.tar.xz
 
     # from Bitbucket
     - src: git+https://bitbucket.org/willthames/git-ansible-galaxy
@@ -252,6 +301,29 @@ Use the following example as a guide for specifying roles in *requirements.yml*:
     - src: git@gitlab.company.com:mygroup/ansible-base.git
       scm: git
       version: "0.1"  # quoted, so YAML doesn't parse this as a floating-point value
+
+Installing roles and collections from the same requirements.yml file
+---------------------------------------------------------------------
+
+You can install roles and collections from the same requirements files, with some caveats.
+
+.. code-block:: yaml
+
+    ---
+    roles:
+      # Install a role from Ansible Galaxy.
+      - name: geerlingguy.java
+        version: 1.9.6
+
+    collections:
+      # Install a collection from Ansible Galaxy.
+      - name: geerlingguy.php_roles
+        version: 0.9.3
+        source: https://galaxy.ansible.com
+
+.. note::
+   While both roles and collections can be specified in one requirements file, they need to be installed separately.
+   The ``ansible-galaxy role install -r requirements.yml`` will only install roles and  ``ansible-galaxy collection install -r requirements.yml -p ./`` will only install collections.
 
 Installing multiple roles from multiple files
 ---------------------------------------------
@@ -276,7 +348,7 @@ The following shows the contents of the :file:`requirements.yml` file that now i
 .. code-block:: bash
 
   # from galaxy
-  - src: yatesr.timezone
+  - name: yatesr.timezone
   - include: <path_to_requirements>/webserver.yml
 
 To install all the roles from both files, pass the root file, in this case :file:`requirements.yml` on the
@@ -348,10 +420,10 @@ Alternately, you can specify the role dependencies in the complex form used in  
 .. code-block:: yaml
 
     dependencies:
-      - src: geerlingguy.ansible
-      - src: git+https://github.com/geerlingguy/ansible-role-composer.git
+      - name: geerlingguy.ansible
+      - name: composer
+        src: git+https://github.com/geerlingguy/ansible-role-composer.git
         version: 775396299f2da1f519f0d8885022ca2d6ee80ee8
-        name: composer
 
 When dependencies are encountered by ``ansible-galaxy``, it will automatically install each dependency to the ``roles_path``. To understand how dependencies are handled during play execution, see :ref:`playbooks_reuse_roles`.
 
@@ -372,7 +444,7 @@ Use ``list`` to show the name and version of each role installed in the *roles_p
       - ansible-network.config_manager, v2.6.2
       - ansible-network.cisco_nxos, v2.7.1
       - ansible-network.vyos, v2.7.3
-    - ansible-network.cisco_ios, v2.7.0
+      - ansible-network.cisco_ios, v2.7.0
 
 Remove an installed role
 ------------------------
@@ -385,7 +457,7 @@ Use ``remove`` to delete a role from *roles_path*:
 
 
 .. seealso::
-  `collections <collections>`_
-    Sharable collections of modules, playbooks and roles
-  `roles <playbooks_reuse_roles>`_
+  :ref:`collections`
+    Shareable collections of modules, playbooks and roles
+  :ref:`playbooks_reuse_roles`
     Reusable tasks, handlers, and other files in a known directory structure

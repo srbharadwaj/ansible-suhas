@@ -37,6 +37,9 @@ class L2_interfacesFacts(object):
 
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
+    def get_device_data(self, connection):
+        return connection.get('show running-config | section ^interface')
+
     def populate_facts(self, connection, ansible_facts, data=None):
         """ Populate the facts for l2_interfaces
 
@@ -47,7 +50,7 @@ class L2_interfacesFacts(object):
         :returns: facts
         """
         if not data:
-            data = connection.get('show running-config | section ^interface')
+            data = self.get_device_data(connection)
 
         # operate on a collection of resource x
         config = data.split('interface ')
@@ -78,6 +81,9 @@ class L2_interfacesFacts(object):
 
         # populate the facts from the configuration
         config['name'] = re.match(r'(\S+)', conf).group(1).replace('"', '')
+        has_mode = re.search(r"switchport mode (\S+)", conf)
+        if has_mode:
+            config["mode"] = has_mode.group(1)
 
         has_access = re.search(r"switchport access vlan (\d+)", conf)
         if has_access:

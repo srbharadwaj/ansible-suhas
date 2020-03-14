@@ -2,6 +2,9 @@
 
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
@@ -16,8 +19,10 @@ description:
 author: Yang yang (@QijunPan)
 notes:
     - If no vrf is supplied, vrf is set to default.
-      If I(state=absent), the route will be removed, regardless of the
-      non-required parameters.
+    - If I(state=absent), the route will be removed, regardless of the non-required parameters.
+    - This module requires the netconf system service be enabled on the remote device being managed.
+    - Recommended connection is C(netconf).
+    - This module also works with C(local) connections for legacy playbooks.
 options:
     prefix:
         description:

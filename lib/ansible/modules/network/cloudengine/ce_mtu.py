@@ -16,6 +16,9 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
@@ -31,6 +34,8 @@ author: QijunPan (@QijunPan)
 notes:
     - Either C(sysmtu) param is required or C(interface) AND C(mtu) params are req'd.
     - C(state=absent) unconfigures a given MTU if that value is currently present.
+    - Recommended connection is C(network_cli).
+    - This module also works with C(local) connections for legacy playbooks.
 options:
     interface:
         description:

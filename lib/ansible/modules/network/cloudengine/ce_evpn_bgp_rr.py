@@ -16,6 +16,9 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
 ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'status': ['preview'],
                     'supported_by': 'community'}
@@ -31,6 +34,8 @@ author: Zhijin Zhou (@QijunPan)
 notes:
     - Ensure that BGP view is existed.
     - The peer, peer_type, and reflect_client arguments must all exist or not exist.
+    - Recommended connection is C(network_cli).
+    - This module also works with C(local) connections for legacy playbooks.
 options:
     as_number:
         description:
